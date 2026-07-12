@@ -1,149 +1,90 @@
-# 🤖 Agente Financeiro Inteligente com IA Generativa
+# 💸 ECO — Assistente Virtual de Controle Orçamentário
 
-## Contexto
+Agente de IA generativa que monitora os gastos do usuário por categoria e emite alertas proativos antes que o orçamento mensal estoure.
 
-Os assistentes virtuais no setor financeiro estão evoluindo de simples chatbots reativos para **agentes inteligentes e proativos**. Neste desafio, você vai idealizar e prototipar um agente financeiro que utiliza IA Generativa para:
+## O Problema
 
-- **Antecipar necessidades** ao invés de apenas responder perguntas
-- **Personalizar** sugestões com base no contexto de cada cliente
-- **Cocriar soluções** financeiras de forma consultiva
-- **Garantir segurança** e confiabilidade nas respostas (anti-alucinação)
+Muita gente perde o controle do orçamento por não acompanhar os pequenos gastos do dia a dia em tempo real — e só percebe quando a categoria de Lazer, Alimentação ou Transporte já passou do limite.
 
-> [!TIP]
-> Na pasta [`examples/`](./examples/) você encontra referências de implementação para cada etapa deste desafio.
+## A Solução
 
----
+O Eco cruza o histórico de transações do usuário com os limites definidos por categoria e alerta quando o consumo se aproxima ou ultrapassa o teto estipulado, sempre sugerindo uma dica prática de economia.
 
-## O Que Você Deve Entregar
+## Persona
 
-### 1. Documentação do Agente
+| | |
+|---|---|
+| **Nome** | Eco (de "Economizar") |
+| **Tom** | Firme, porém amigável — como um professor particular |
+| **Comportamento** | Educado, preventivo, analítico. Nunca julga as escolhas do cliente, mas mostra o impacto delas no orçamento |
+| **Limites declarados** | Não recomenda onde gastar/investir · não acessa dados bancários sensíveis · não substitui um profissional certificado |
 
-Defina **o que** seu agente faz e **como** ele funciona:
+## Como Funciona
 
-- **Caso de Uso:** Qual problema financeiro ele resolve? (ex: consultoria de investimentos, planejamento de metas, alertas de gastos)
-- **Persona e Tom de Voz:** Como o agente se comporta e se comunica?
-- **Arquitetura:** Fluxo de dados e integração com a base de conhecimento
-- **Segurança:** Como evitar alucinações e garantir respostas confiáveis?
+```mermaid
+flowchart TD
+    A[Cliente] --> B["Streamlit (interface)"]
+    B --> C[LLM - Ollama / gpt-oss]
+    C --> D[Base de Conhecimento]
+    D --> C
+    C --> E[Validação]
+    E --> F[Resposta]
+```
 
-📄 **Template:** [`docs/01-documentacao-agente.md`](./docs/01-documentacao-agente.md)
+- **Interface:** [Streamlit](https://streamlit.io/)
+- **LLM:** [Ollama](https://ollama.ai/) rodando localmente (modelo `gpt-oss`)
+- **Base de conhecimento:** transações (`.csv`) e limites por categoria (`.json`), lidos com `pandas` e `json` e injetados dinamicamente no system prompt a cada pergunta
 
----
+## Segurança e Anti-Alucinação
 
-### 2. Base de Conhecimento
-
-Utilize os **dados mockados** disponíveis na pasta [`data/`](./data/) para alimentar seu agente:
-
-| Arquivo | Formato | Descrição |
-|---------|---------|-----------|
-| `transacoes.csv` | CSV | Histórico de transações do cliente |
-| `historico_atendimento.csv` | CSV | Histórico de atendimentos anteriores |
-| `perfil_investidor.json` | JSON | Perfil e preferências do cliente |
-| `produtos_financeiros.json` | JSON | Produtos e serviços disponíveis |
-
-Você pode adaptar ou expandir esses dados conforme seu caso de uso.
-
-📄 **Template:** [`docs/02-base-conhecimento.md`](./docs/02-base-conhecimento.md)
-
----
-
-### 3. Prompts do Agente
-
-Documente os prompts que definem o comportamento do seu agente:
-
-- **System Prompt:** Instruções gerais de comportamento e restrições
-- **Exemplos de Interação:** Cenários de uso com entrada e saída esperada
-- **Tratamento de Edge Cases:** Como o agente lida com situações limite
-
-📄 **Template:** [`docs/03-prompts.md`](./docs/03-prompts.md)
-
----
-
-### 4. Aplicação Funcional
-
-Desenvolva um **protótipo funcional** do seu agente:
-
-- Chatbot interativo (sugestão: Streamlit, Gradio ou similar)
-- Integração com LLM (via API ou modelo local)
-- Conexão com a base de conhecimento
-
-📁 **Pasta:** [`src/`](./src/)
-
----
-
-### 5. Avaliação e Métricas
-
-Descreva como você avalia a qualidade do seu agente:
-
-**Métricas Sugeridas:**
-- Precisão/assertividade das respostas
-- Taxa de respostas seguras (sem alucinações)
-- Coerência com o perfil do cliente
-
-📄 **Template:** [`docs/04-metricas.md`](./docs/04-metricas.md)
-
----
-
-### 6. Pitch
-
-Grave um **pitch de 3 minutos** (estilo elevador) apresentando:
-
-- Qual problema seu agente resolve?
-- Como ele funciona na prática?
-- Por que essa solução é inovadora?
-
-📄 **Template:** [`docs/05-pitch.md`](./docs/05-pitch.md)
-
----
-
-## Ferramentas Sugeridas
-
-Todas as ferramentas abaixo possuem versões gratuitas:
-
-| Categoria | Ferramentas |
-|-----------|-------------|
-| **LLMs** | [ChatGPT](https://chat.openai.com/), [Copilot](https://copilot.microsoft.com/), [Gemini](https://gemini.google.com/), [Claude](https://claude.ai/), [Ollama](https://ollama.ai/) |
-| **Desenvolvimento** | [Streamlit](https://streamlit.io/), [Gradio](https://www.gradio.app/), [Google Colab](https://colab.research.google.com/) |
-| **Orquestração** | [LangChain](https://www.langchain.com/), [LangFlow](https://www.langflow.org/), [CrewAI](https://www.crewai.com/) |
-| **Diagramas** | [Mermaid](https://mermaid.js.org/), [Draw.io](https://app.diagrams.net/), [Excalidraw](https://excalidraw.com/) |
-
----
+- Só usa dados financeiros fornecidos pelo usuário
+- Nunca inventa valores, categorias ou transações
+- Admite quando não tem contexto suficiente ("Não encontrei esse registro...")
+- Foca em alertar e informar, não em decidir pelo usuário
+- Respostas curtas e diretas (até 3 parágrafos)
 
 ## Estrutura do Repositório
 
 ```
-📁 lab-agente-financeiro/
+📁 dio-lab-bia-do-futuro/
 │
 ├── 📄 README.md
 │
-├── 📁 data/                          # Dados mockados para o agente
-│   ├── historico_atendimento.csv     # Histórico de atendimentos (CSV)
-│   ├── perfil_investidor.json        # Perfil do cliente (JSON)
-│   ├── produtos_financeiros.json     # Produtos disponíveis (JSON)
-│   └── transacoes.csv                # Histórico de transações (CSV)
+├── 📁 data/                          # Base de conhecimento do Eco
+│   ├── transacoes.csv                # Histórico de transações
+│   └── categorias_limites.json       # Limite de gasto por categoria
 │
-├── 📁 docs/                          # Documentação do projeto
-│   ├── 01-documentacao-agente.md     # Caso de uso e arquitetura
-│   ├── 02-base-conhecimento.md       # Estratégia de dados
-│   ├── 03-prompts.md                 # Engenharia de prompts
-│   ├── 04-metricas.md                # Avaliação e métricas
+├── 📁 docs/                          # Documentação completa do projeto
+│   ├── 01-documentacao-agente.md     # Caso de uso, persona e arquitetura
+│   ├── 02-base-conhecimento.md       # Estratégia de dados e integração
+│   ├── 03-prompts.md                 # System prompt, few-shots e edge cases
+│   ├── 04-metricas.md                # Testes e avaliação de qualidade
 │   └── 05-pitch.md                   # Roteiro do pitch
 │
-├── 📁 src/                           # Código da aplicação
-│   └── app.py                        # (exemplo de estrutura)
-│
-├── 📁 assets/                        # Imagens e diagramas
-│   └── ...
-│
-└── 📁 examples/                      # Referências e exemplos
-    └── README.md
+└── 📁 src/
+    └── app.py                        # Aplicação Streamlit + Ollama
 ```
 
----
+## Como Rodar
 
-## Dicas Finais
+```bash
+# 1. Instalar o Ollama (ollama.com) e baixar o modelo
+ollama pull gpt-oss
+ollama serve
 
-1. **Comece pelo prompt:** Um bom system prompt é a base de um agente eficaz
-2. **Use os dados mockados:** Eles garantem consistência e evitam problemas com dados sensíveis
-3. **Foque na segurança:** No setor financeiro, evitar alucinações é crítico
-4. **Teste cenários reais:** Simule perguntas que um cliente faria de verdade
-5. **Seja direto no pitch:** 3 minutos passam rápido, vá ao ponto
+# 2. Instalar as dependências
+pip install streamlit pandas requests
+
+# 3. Rodar a aplicação
+streamlit run src/app.py
+```
+
+## Documentação Completa
+
+Todo o processo de construção do Eco — do system prompt aos testes de qualidade — está documentado na pasta [`docs/`](./docs/):
+
+- [Documentação do Agente](./docs/01-documentacao-agente.md)
+- [Base de Conhecimento](./docs/02-base-conhecimento.md)
+- [Prompts (system prompt + few-shots + edge cases)](./docs/03-prompts.md)
+- [Métricas e Testes de Qualidade](./docs/04-metricas.md)
+- [Pitch](./docs/05-pitch.md)
